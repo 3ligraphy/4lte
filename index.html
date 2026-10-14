@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Invoice</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Toolbar (hidden when printing) -->
+  <header class="toolbar no-print">
+    <div class="toolbar__title">Invoice Builder</div>
+    <div class="toolbar__actions">
+      <label class="btn btn--ghost">
+        Upload logo
+        <input type="file" id="logoInput" accept="image/*" hidden>
+      </label>
+      <button class="btn btn--ghost" id="resetLogo" type="button">Default logo</button>
+      <label class="btn btn--ghost color-pick" title="Accent color">
+        Accent
+        <input type="color" id="accentInput" value="#1e3a8a">
+      </label>
+      <button class="btn btn--ghost" id="newInvoice" type="button">New</button>
+      <button class="btn btn--primary" id="printBtn" type="button">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <main class="sheet" id="invoice">
+    <div class="sheet__frame">
+
+      <!-- Header band -->
+      <section class="head">
+        <div class="head__brand">
+          <div class="logo-box">
+            <img id="logoImg" src="logo.svg" alt="Company logo">
+          </div>
+          <div class="company">
+            <input class="company__name" data-field="companyName" value="Your Company Name">
+            <textarea data-field="companyAddress" rows="3">123 Business Street
+City, Country 00000
+info@company.com · +1 555 000 0000</textarea>
+          </div>
+        </div>
+        <div class="head__title">
+          <h1>INVOICE</h1>
+          <table class="meta">
+            <tr><th>Invoice #</th><td><input data-field="invoiceNo" value="INV-0001"></td></tr>
+            <tr><th>Issue date</th><td><input type="date" data-field="issueDate"></td></tr>
+            <tr><th>Due date</th><td><input type="date" data-field="dueDate"></td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- Parties -->
+      <section class="parties">
+        <div class="party">
+          <div class="party__label">Bill To</div>
+          <input class="party__name" data-field="clientName" value="Client Name">
+          <textarea data-field="clientAddress" rows="3">Client Company
+Street Address
+City, Country</textarea>
+        </div>
+        <div class="party">
+          <div class="party__label">Payment Details</div>
+          <textarea data-field="paymentDetails" rows="4">Bank: Your Bank
+Account name: Your Company
+IBAN: XX00 0000 0000 0000
+SWIFT: XXXXXXXX</textarea>
+        </div>
+      </section>
+
+      <!-- Line items -->
+      <section>
+        <table class="items">
+          <thead>
+            <tr>
+              <th class="c-no">#</th>
+              <th class="c-desc">Description</th>
+              <th class="c-qty">Qty</th>
+              <th class="c-price">Unit Price</th>
+              <th class="c-amount">Amount</th>
+              <th class="c-del no-print"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+        <button class="btn btn--add no-print" id="addItem" type="button">+ Add item</button>
+      </section>
+
+      <!-- Notes + totals -->
+      <section class="bottom">
+        <div class="notes">
+          <div class="party__label">Notes &amp; Terms</div>
+          <textarea data-field="notes" rows="4">Thank you for your business! Payment is due within 14 days of the issue date.</textarea>
+        </div>
+        <table class="totals">
+          <tr><th>Subtotal</th><td id="subtotal">0.00</td></tr>
+          <tr>
+            <th>Discount <span class="pct"><input type="number" min="0" step="0.01" data-field="discount" value="0">%</span></th>
+            <td id="discountAmt">0.00</td>
+          </tr>
+          <tr>
+            <th>Tax <span class="pct"><input type="number" min="0" step="0.01" data-field="tax" value="0">%</span></th>
+            <td id="taxAmt">0.00</td>
+          </tr>
+          <tr class="totals__grand">
+            <th>Total <input class="currency" data-field="currency" value="USD" maxlength="4"></th>
+            <td id="grandTotal">0.00</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- Signature / footer -->
+      <section class="sign">
+        <div class="sign__box">
+          <div class="sign__line"></div>
+          <div class="sign__label">Authorized Signature</div>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <input data-field="footer" value="Your Company Name · www.company.com · Registered No. 000000">
+      </footer>
+    </div>
+  </main>
+
+  <template id="rowTpl">
+    <tr>
+      <td class="c-no"></td>
+      <td class="c-desc"><textarea rows="1" data-k="desc" placeholder="Item description"></textarea></td>
+      <td class="c-qty"><input type="number" min="0" step="any" data-k="qty"></td>
+      <td class="c-price"><input type="number" min="0" step="0.01" data-k="price"></td>
+      <td class="c-amount"></td>
+      <td class="c-del no-print"><button type="button" class="del" title="Remove item">×</button></td>
+    </tr>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
