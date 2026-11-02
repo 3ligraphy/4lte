@@ -14,6 +14,7 @@
   <!-- Toolbar (hidden when printing) -->
   <header class="toolbar no-print">
     <div class="toolbar__title">Invoice Builder</div>
+    <div class="save-warn" id="saveWarn" hidden>Couldn't save to this browser (storage full, often from a large logo). Your changes will be lost on reload.</div>
     <div class="toolbar__actions">
       <label class="btn btn--ghost">
         Upload logo
@@ -131,7 +132,13 @@ SWIFT: XXXXXXXX</textarea>
   <template id="rowTpl">
     <tr>
       <td class="c-no"></td>
-      <td class="c-desc"><textarea rows="1" data-k="desc" placeholder="Item description"></textarea></td>
+      <td class="c-desc">
+        <textarea rows="1" data-k="desc" placeholder="Item description"></textarea>
+        <div class="serials">
+          <textarea rows="1" data-k="serials" placeholder="Serial numbers (one per line)"></textarea>
+          <div class="serial-count no-print"></div>
+        </div>
+      </td>
       <td class="c-qty"><input type="number" min="0" step="any" data-k="qty"></td>
       <td class="c-price"><input type="number" min="0" step="0.01" data-k="price"></td>
       <td class="c-amount"></td>

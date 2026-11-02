@@ -35,7 +35,9 @@
   }
 
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* storage full or blocked */ }
+    var ok = true;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { ok = false; /* storage full or blocked */ }
+    $("#saveWarn").hidden = ok;
   }
 
   function money(n) {
@@ -48,6 +50,31 @@
     if (el.tagName !== "TEXTAREA") return;
     el.style.height = "auto";
     el.style.height = el.scrollHeight + 2 + "px";
+    mirror(el);
+  }
+
+  /* Browsers print a <textarea> as a clipped box (often only its first line).
+     Keep a plain-text copy next to each one; print shows the copy instead. */
+  function mirror(el) {
+    var m = el.nextElementSibling;
+    if (!m || !m.classList.contains("print-text")) {
+      m = document.createElement("div");
+      m.className = "print-text";
+      el.parentNode.insertBefore(m, el.nextSibling);
+    }
+    m.textContent = el.value;
+  }
+
+  function serialList(v) {
+    return String(v || "").split(/[\n,]+/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function updateSerialCount(row, item) {
+    var n = serialList(item.serials).length;
+    var q = num(item.qty);
+    var el = $(".serial-count", row);
+    el.textContent = n ? n + " of " + q + " serial number" + (q === 1 ? "" : "s") : "";
+    el.classList.toggle("is-off", n > 0 && n !== q);
   }
 
   /* ---------- Fields ---------- */
@@ -76,8 +103,9 @@
         var k = el.dataset.k;
         el.value = item[k] === undefined ? "" : item[k];
         el.addEventListener("input", function () {
-          item[k] = k === "desc" ? el.value : el.value === "" ? "" : num(el.value);
+          item[k] = k === "desc" || k === "serials" ? el.value : el.value === "" ? "" : num(el.value);
           autosize(el);
+          updateSerialCount(row, item);
           recalc();
           save();
         });
@@ -88,7 +116,8 @@
         save();
       });
       body.appendChild(row);
-      autosize($("textarea", row));
+      $$("textarea", row).forEach(autosize);
+      updateSerialCount(row, item);
     });
     recalc();
   }
@@ -144,7 +173,7 @@
 
   /* ---------- Toolbar ---------- */
   $("#addItem").addEventListener("click", function () {
-    state.items.push({ desc: "", qty: 1, price: 0 });
+    state.items.push({ desc: "", qty: 1, price: 0, serials: "" });
     renderItems();
     save();
     var rows = $$("tr", body);
@@ -162,7 +191,7 @@
     fresh.fields.invoiceNo = prevNo.replace(/(\d+)(?!.*\d)/, function (d) {
       return String(parseInt(d, 10) + 1).padStart(d.length, "0");
     });
-    fresh.items = [{ desc: "", qty: 1, price: 0 }];
+    fresh.items = [{ desc: "", qty: 1, price: 0, serials: "" }];
     fresh.logo = state.logo;
     fresh.accent = state.accent;
     state = fresh;
@@ -171,6 +200,11 @@
   });
 
   window.addEventListener("beforeprint", function () { $$("textarea").forEach(autosize); });
+  if (window.matchMedia) {
+    var pm = window.matchMedia("print");
+    var onPrint = function (e) { if (e.matches) $$("textarea").forEach(autosize); };
+    if (pm.addEventListener) pm.addEventListener("change", onPrint); else if (pm.addListener) pm.addListener(onPrint);
+  }
 
   initFields();
   renderItems();

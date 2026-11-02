@@ -32,6 +32,7 @@ body {
 }
 .toolbar__title { font-weight: 700; letter-spacing: .02em; }
 .toolbar__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.save-warn { background: #fef3c7; color: #92400e; border-radius: 6px; padding: 6px 10px; font-size: 13px; font-weight: 600; }
 
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
@@ -100,7 +101,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 
 .company { flex: 1; min-width: 0; }
 .company__name { font-size: 20px; font-weight: 800; color: var(--accent); }
-.company textarea { color: var(--muted); font-size: 12.5px; }
+.company textarea, .company .print-text { color: var(--muted); font-size: 12.5px; }
 
 .head__title { text-align: right; min-width: 220px; }
 .head__title h1 {
@@ -125,7 +126,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
   color: var(--accent); margin-bottom: 4px;
 }
 .party__name { font-weight: 700; font-size: 15px; }
-.party textarea { font-size: 13px; color: #334155; }
+.party textarea, .party .print-text { font-size: 13px; color: #334155; }
 
 /* ---------- Items table ---------- */
 .items { width: 100%; border-collapse: collapse; border: 2px solid var(--line-strong); }
@@ -148,9 +149,19 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
   border-radius: 50%; cursor: pointer; font-size: 15px; line-height: 1;
 }
 
+.serials { margin-top: 2px; }
+.serials textarea { font-size: 12px; color: #334155; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.serials .print-text { font-size: 11.5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.serials .print-text:not(:empty)::before { content: "S/N:"; display: block; font-family: "Inter", system-ui, sans-serif; font-weight: 600; color: var(--muted); }
+.serial-count { font-size: 11px; color: var(--muted); padding: 0 2px; }
+.serial-count.is-off { color: #b45309; font-weight: 600; }
+
+/* Plain-text copies of textareas, shown only when printing */
+.print-text { display: none; white-space: pre-wrap; overflow-wrap: anywhere; padding: 0 2px; }
+
 /* ---------- Bottom ---------- */
 .bottom { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
-.notes textarea { font-size: 12.5px; color: #334155; }
+.notes textarea, .notes .print-text { font-size: 12.5px; color: #334155; }
 
 .totals { width: 100%; border-collapse: collapse; border: 2px solid var(--line-strong); }
 .totals th, .totals td { border: 1px solid var(--line-strong); padding: 7px 10px; }
@@ -192,6 +203,8 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
   .sheet { margin: 0; box-shadow: none; width: 210mm; min-height: 0; padding: 10mm; }
   .sheet__frame { min-height: calc(297mm - 22mm); }
   input, textarea { border-color: transparent !important; background: transparent !important; }
+  textarea { display: none !important; }
+  .print-text { display: block; }
   textarea::placeholder, input::placeholder { color: transparent; }
   input[type=date]::-webkit-calendar-picker-indicator { display: none; }
 }
